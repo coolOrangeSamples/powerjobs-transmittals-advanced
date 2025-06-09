@@ -21,6 +21,8 @@ This repository provides a sample implementation of a **Transmittals workflow** 
 
 ## Prerequisites
 
+> **Note**: powerJobs Processor version **24.0.17** or greater and powerEvents verion **24.0.24** or greater are required for this workflow to run.
+
 This workflow requires:
 
 - **powerJobs Processor** installed on the Autodesk Vault **Job Processor machine**
@@ -54,3 +56,64 @@ This script will:
 
 5. **Restart** Vault Explorer to begin using the Transmittals workflow
 
+## Feature-Level Workflow Overview
+
+This sample solution enables **Transmittal Management** within Autodesk Vault Professional using **coolOrange powerJobs**. It provides a seamless process for preparing, validating, and distributing transmittal packages with traceability and automation.
+
+---
+
+### Vault Client Functionality
+
+Vault users interact with transmittals directly in the Vault Client through a custom extension:
+
+- **Transmittal Creation**:  
+  Users can create a *Transmittal* - a special object that represents a set of files to be sent externally.
+
+- **File Inclusion**:  
+  The UI allows attaching files to the transmittal, with options to include:
+  - Child references
+  - Parent relationships
+  - Related drawing files
+
+- **File Output Selection**:  
+  For each file, users can choose which formats should be included in the package:
+  - Native format
+  - PDF
+  - DXF
+
+- **Pre-Publish Validation**:  
+  Before a transmittal can be published:
+  - It must include at least one file
+  - All files must be at their latest version (or the user is prompted with a warning)
+
+This ensures transmittals are consistent, complete, and up-to-date before processing.
+
+---
+
+### Job Processor Functionality
+
+Once a transmittal is published, the **powerJobs Processor** takes over to generate the actual package:
+
+- **Metadata Gathering**:  
+  It reads the transmittal's metadata and fetches all associated files.
+
+- **Cover Sheet Generation**:  
+  A **PDF summary** is created using an RDLC report template, detailing all files and metadata in the transmittal.
+
+- **ZIP Package Creation**:  
+  The job bundles:
+  - The selected file outputs (native, PDF, DXF)
+  - The generated cover sheet  
+  ...into a single ZIP archive.
+
+- **Vault Archival**:  
+  The final ZIP and its PDF cover are uploaded to a specified folder within Vault (default: `$/Transmittals`), ensuring traceability and centralized storage.
+
+---
+
+### End-to-End Workflow
+
+1. **User creates and configures a transmittal** in Vault.
+2. **Transmittal is validated and published** through Vault lifecycle state change.
+3. **powerJobs Processor picks up the job**, generates all outputs, and stores the final package in Vault.
+4. The transmittal is now complete, stored, and ready to be sent externally.
