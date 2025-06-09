@@ -11,5 +11,46 @@ THE SAMPLE CODE ON THIS REPOSITORY IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY K
 
 THE USAGE OF THIS SAMPLE IS AT YOUR OWN RISK AND **THERE IS NO SUPPORT** RELATED TO IT.
 
+---
+
 ## Description
-Transmittals functionality for Autodesk Vault Professional utilizing powerJobs Client and Processor
+
+This repository provides a sample implementation of a **Transmittals workflow** for **Autodesk Vault Professional**, utilizing **coolOrange powerJobs Client** and **powerJobs Processor**.
+
+---
+
+## Prerequisites
+
+This workflow requires:
+
+- **powerJobs Processor** installed on the Autodesk Vault **Job Processor machine**
+- **powerJobs Client** installed on each Autodesk Vault **Client machine**
+
+The repository includes files for **both** components - Client and Processor. It is assumed the workflow is deployed in a **sandbox environment** where both Vault Explorer and the Vault Job Processor are running on the **same machine**.
+
+If you need to distribute the workflow across multiple machines:
+
+- Use files from the `powerJobs` directory on the **Job Processor**
+- Use files from the `Client Customizations` directory on each **Vault Client machine**
+
+Further details are provided in the installation section below.
+
+---
+
+## Installation
+
+> **Note**: This sample assumes that **Vault Explorer** and the **Vault Job Processor** run on the same machine.
+
+1. **Close** Autodesk Vault Explorer and the Vault Job Processor, including **powerJobs Processor**
+2. **Download or clone** this repository, and copy all files to:  
+   `C:\ProgramData\coolOrange`
+3. **Unblock all downloaded files** (Windows may block them):  
+   [How to unblock files](https://support.coolorange.com/kb/how-to-unblock-files)
+4. **Run the setup script**:  
+"C:\ProgramData\coolOrange\Client Customizations\Modules\Transmittals\Setup.ps1"
+This script will:
+    - Prompt for Vault credentials during execution
+    - Create required **Custom Objects**, **Categories**, **Lifecycles**, **States**, and **User Defined Properties** in Vault
+
+5. **Restart** Vault Explorer to begin using the Transmittals workflow
+
