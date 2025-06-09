@@ -1,0 +1,48 @@
+<wpf:ThemedWPFWindow xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:wpf="clr-namespace:Autodesk.DataManagement.Client.Framework.Forms.Controls.WPF;assembly=Autodesk.DataManagement.Client.Framework.Forms"
+                 Title="COOLORANGE - Transmittals" 
+                 Height="160" Width="400" MinWidth="450" MinHeight="160"
+                 WindowStartupLocation="CenterOwner">
+    <wpf:ThemedWPFWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Autodesk.DataManagement.Client.Framework.Forms;component/Controls/WPF/ControlTemplates/MergedResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="DarkLightWindowStyle" TargetType="{x:Type wpf:ThemedWPFWindow}" BasedOn="{StaticResource DarkLightThemedWindowStyle}" />
+            <Style x:Key="DefaultWindowStyle" TargetType="{x:Type wpf:ThemedWPFWindow}" BasedOn="{StaticResource DefaultThemedWindowStyle}" />
+        </ResourceDictionary>
+    </wpf:ThemedWPFWindow.Resources>
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" Content="Select the Transmittal to add the selected file(s) to:" />
+        <ComboBox Grid.Row="1" x:Name="Object" TextSearch.TextPath="Name" DisplayMemberPath="Name" SelectedValuePath="Object" VerticalAlignment="Top" Height="23" IsEditable="False" />
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="110" />
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="Ok" Grid.Column="1" Height="26" Width="100" Margin="0,0,10,0">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ThemedButtonStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedItem, ElementName=Object}" Value="{x:Null}">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                OK
+            </Button>
+            <Button x:Name="Cancel" Grid.Column="2" Height="26" Width="100" IsCancel="True">Cancel</Button>
+        </Grid>
+    </Grid>
+</wpf:ThemedWPFWindow>

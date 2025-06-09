@@ -1,0 +1,259 @@
+﻿<ContentControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ContentControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Autodesk.DataManagement.Client.Framework.Forms;component/Controls/WPF/ControlTemplates/MergedResources.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Autodesk.DataManagement.Client.Framework.Forms;component/SkinUtils/WPF/Themes/LightTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource ThemedTextBoxStyle}">
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="Margin" Value="1" />
+            </Style>
+
+            <Geometry x:Key="IndicatorGeometry">F1 M24,24z M0,0z M12,21.101695C8.68629,21.101695,6,18.415395,6,15.101695L6,9.1016949C6,5.7879849 8.68629,3.1016949 12,3.1016949 15.3137,3.1016949 18,5.7879849 18,9.1016949L18,15.101695C18,18.415395,15.3137,21.101695,12,21.101695z</Geometry>
+            <DrawingImage x:Key="DrawingImageGreen">
+                <DrawingImage.Drawing>
+                    <DrawingGroup ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+                        <GeometryDrawing Brush="Green" Geometry="{StaticResource IndicatorGeometry}">
+                            <GeometryDrawing.Pen>
+                                <Pen Brush="Green" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+                            </GeometryDrawing.Pen>
+                        </GeometryDrawing>
+                    </DrawingGroup>
+                </DrawingImage.Drawing>
+            </DrawingImage>
+            <DrawingImage x:Key="DrawingImageRed">
+                <DrawingImage.Drawing>
+                    <DrawingGroup ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+                        <GeometryDrawing Brush="Red" Geometry="{StaticResource IndicatorGeometry}">
+                            <GeometryDrawing.Pen>
+                                <Pen Brush="Red" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+                            </GeometryDrawing.Pen>
+                        </GeometryDrawing>
+                    </DrawingGroup>
+                </DrawingImage.Drawing>
+            </DrawingImage>
+        </ResourceDictionary>
+    </ContentControl.Resources>
+    <ContentControl.ContentTemplateSelector>
+        <Binding Mode="OneWay" Source="{StaticResource ThemedLabelStyle}"/>
+    </ContentControl.ContentTemplateSelector>
+
+    <Grid Height="Auto">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" >
+            <Border BorderThickness="0 0 0 0" />
+            <Grid  Margin="5 10 5 10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="144" />
+                    <ColumnDefinition Width="145" />
+                </Grid.ColumnDefinitions>
+
+                <Label x:Name="Title" Content="{Binding Name}" ContentStringFormat="Transmittal {0}" Grid.Column="0" FontSize="14" FontWeight="Medium" VerticalAlignment="Center" />
+                <Label Content="{Binding Links.Count}" ContentStringFormat="(Files Count: {0})" Grid.Column="1" FontSize="14" FontWeight="Medium" VerticalAlignment="Center" />
+
+                <Button x:Name="GoToPdf" Content="Go To PDF Report" Grid.Column="2" ToolTipService.ShowOnDisabled="True" Margin="5,0,0,0">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ThemedButtonStyle}">
+                            <Setter Property="IsEnabled" Value="False" />
+                            <Setter Property="ToolTip" Value="Change the state to 'Publish' and wait for the Job Processor to create the Transmittal package. Once finished, the Transmittal state becomes 'Ready to send'" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding State}" Value="Ready to send">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                    <Setter Property="ToolTip" Value="{x:Null}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding State}" Value="Sent">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                    <Setter Property="ToolTip" Value="{x:Null}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button x:Name="GoToZip" Content="Go To ZIP Package" Grid.Column="3" ToolTipService.ShowOnDisabled="True" Margin="5,0,0,0">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ThemedButtonStyle}">
+                            <Setter Property="IsEnabled" Value="False" />
+                            <Setter Property="ToolTip" Value="Change the state to 'Publish' and wait for the Job Processor to create the Transmittal package. Once finished, the Transmittal state becomes 'Ready to send'" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding State}" Value="Ready to send">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                    <Setter Property="ToolTip" Value="{x:Null}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding State}" Value="Sent">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                    <Setter Property="ToolTip" Value="{x:Null}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+        </Grid>
+
+        <DataGrid Grid.Row="1" ColumnHeaderHeight="40" x:Name="FilesTable" EnableColumnVirtualization="False"
+          EnableRowVirtualization="False" CanUserAddRows="False" RowHeaderWidth="0"
+          ItemsSource="{Binding Path=Links, UpdateSourceTrigger=PropertyChanged}"
+          AutoGenerateColumns="False" BorderThickness="1,1,1,1" >
+            <DataGrid.Style>
+                <Style TargetType="DataGrid" BasedOn="{StaticResource ThemedDataGridStyle}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Items.Count, RelativeSource={RelativeSource Self}}" Value="0">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="DataGrid">
+                                        <Border BorderThickness="1" Style="{StaticResource ThemedBorderStyle}">
+                                            <TextBlock Text="There are no files included in this Transmittal" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.Style>
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell" BasedOn="{StaticResource ThemedDataGridCellStyle}">
+                    <Setter Property="Margin" Value="0" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type DataGridCell}">
+                                <Grid Background="{TemplateBinding Background}">
+                                    <ContentPresenter VerticalAlignment="Center" />
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </DataGrid.CellStyle>
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow" BasedOn="{StaticResource ThemedDataGridRowStyle}">
+                    <Setter Property="Height" Value="25" />
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" Width="*" IsReadOnly="True" />
+                <DataGridTextColumn Header="Folder" Binding="{Binding Folder}" Width="*" IsReadOnly="True" />
+                <DataGridTextColumn Header="Rev" Binding="{Binding FileRevision}" Width="50" IsReadOnly="True" />
+                <DataGridTextColumn Header="Ver" Binding="{Binding FileVersion}" Width="45" IsReadOnly="True" />
+                <DataGridTemplateColumn Header="" Width="22" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Width="16" Height="16" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="3,0,0,0">
+                                    <Image.Style>
+                                        <Style TargetType="{x:Type Image}">
+                                            <Setter Property="Source" Value="{StaticResource DrawingImageGreen}" />
+                                            <Setter Property="ToolTip" Value="Latest version" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsUpToDate}" Value="false">
+                                                    <Setter Property="Source" Value="{StaticResource DrawingImageRed}" />
+                                                    <Setter Property="ToolTip" Value="NOT the latest version!" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Image.Style>
+                                </Image>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="45">
+                    <DataGridTemplateColumn.Header>
+                        <StackPanel HorizontalAlignment="Center" Margin="0">
+                            <Label HorizontalAlignment="Center" Padding="0" Content="Native" FontWeight="Normal" />
+                            <CheckBox HorizontalAlignment="Center" Name="CheckAllAddNative" IsThreeState="True" Padding="0" IsEnabled="False" />
+                        </StackPanel>
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.HeaderStyle>
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="Background" Value="Transparent" />
+                        </Style>
+                    </DataGridTemplateColumn.HeaderStyle>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox HorizontalAlignment="Center" IsChecked="{Binding AddNative}" IsEnabled="False" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="45">
+                    <DataGridTemplateColumn.Header>
+                        <StackPanel HorizontalAlignment="Center" Margin="0">
+                            <Label HorizontalAlignment="Center" Padding="0" Content="PDF" FontWeight="Normal" />
+                            <CheckBox HorizontalAlignment="Center" Name="CheckAllAddPdf" IsThreeState="True" Padding="0" IsEnabled="False" />
+                        </StackPanel>
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.HeaderStyle>
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="Background" Value="Transparent" />
+                        </Style>
+                    </DataGridTemplateColumn.HeaderStyle>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox HorizontalAlignment="Center" IsChecked="{Binding AddPdf}" IsEnabled="False "/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="45">
+                    <DataGridTemplateColumn.Header>
+                        <StackPanel HorizontalAlignment="Center" Margin="0">
+                            <Label HorizontalAlignment="Center" Padding="0" Content="DXF" FontWeight="Normal" />
+                            <CheckBox HorizontalAlignment="Center" Name="CheckAllAddDxf" IsThreeState="True" Padding="0" IsEnabled="False" />
+                        </StackPanel>
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.HeaderStyle>
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="Background" Value="Transparent" />
+                        </Style>
+                    </DataGridTemplateColumn.HeaderStyle>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox HorizontalAlignment="Center" IsChecked="{Binding AddDxf}" IsEnabled="False" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Grid Grid.Row="2" >
+            <Border BorderThickness="0 0 0 0" Style="{StaticResource ThemedBorderStyle}"/>
+            <Grid Margin="5 0 5 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Viewbox Width="16" Height="16">
+                    <Grid>
+                        <Path
+                            Fill="#FFF68712"
+                            Data="M 9.636719 6.761719 L 14.15625 3.429688 C 14.15625 3.429688 17.589844 7.320313 14.214844 12.582031 C 12.316406 11.242188 9.636719 9.261719 9.636719 9.261719 C 9.636719 9.261719 10.417969 8.128906 9.636719 6.761719" />
+                        <Path
+                            Fill="{DynamicResource ThemedForegroundColor}"
+                            Data="M 8 15.363281 C 3.9375 15.363281 0.636719 12.0625 0.636719 8 C 0.636719 3.941406 3.9375 0.636719 8 0.636719 C 10.304688 0.636719 12.363281 1.699219 13.714844 3.359375 L 9.667969 6.363281 C 9.246094 5.929688 8.652344 5.660156 8 5.660156 C 6.710938 5.660156 5.660156 6.710938 5.660156 8 C 5.660156 9.289063 6.710938 10.339844 8 10.339844 C 8.652344 10.339844 9.242188 10.074219 9.664063 9.640625 L 13.703125 12.65625 C 12.347656 14.308594 10.296875 15.363281 8 15.363281 Z M 10.050781 6.875 L 14.09375 3.871094 C 14.894531 5.050781 15.363281 6.472656 15.363281 8 C 15.363281 9.535156 14.890625 10.964844 14.082031 12.144531 L 10.046875 9.132813 C 10.234375 8.796875 10.339844 8.410156 10.339844 8 C 10.339844 7.59375 10.234375 7.207031 10.050781 6.875 Z M 9.703125 8 C 9.703125 8.9375 8.9375 9.703125 8 9.703125 C 7.0625 9.703125 6.296875 8.9375 6.296875 8 C 6.296875 7.0625 7.0625 6.296875 8 6.296875 C 8.9375 6.296875 9.703125 7.0625 9.703125 8 Z M 8 0 C 3.589844 0 0 3.589844 0 8 C 0 12.410156 3.589844 16 8 16 C 12.410156 16 16 12.410156 16 8 C 16 3.589844 12.410156 0 8 0" />
+                    </Grid>
+                </Viewbox>
+                <Label Grid.Column="1" Content="COOLORANGE - Transmittals" FontSize="12" Foreground="#FF9900" HorizontalAlignment="Left" />
+                <Label Grid.Column="2" Content="www.coolorange.com" FontSize="11" Foreground="#CCCCCC" HorizontalAlignment="Right"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentControl>
