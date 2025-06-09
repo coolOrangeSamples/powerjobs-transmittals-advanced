@@ -5,6 +5,8 @@
 [![coolOrange powerEvents](https://img.shields.io/badge/coolOrange%20powerEvents-24.0.24-orange.svg)](https://doc.coolorange.com/projects/powerevents/en/stable/)
 [![coolOrange powerJobs](https://img.shields.io/badge/coolOrange%20powerJobs-24.0.17-orange.svg)](https://doc.coolorange.com/projects/powerjobsprocessor/en/stable/)
 
+![image](https://github.com/user-attachments/assets/c9195678-273f-482b-b9d5-80f647ac9314)
+
 ## Disclaimer
 
 THE SAMPLE CODE ON THIS REPOSITORY IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
