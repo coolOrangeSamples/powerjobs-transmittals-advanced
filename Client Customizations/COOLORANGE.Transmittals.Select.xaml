@@ -3,7 +3,7 @@
                  xmlns:wpf="clr-namespace:Autodesk.DataManagement.Client.Framework.Forms.Controls.WPF;assembly=Autodesk.DataManagement.Client.Framework.Forms"
                  Title="COOLORANGE - Transmittals" 
                  Height="160" Width="400" MinWidth="450" MinHeight="160"
-                 WindowStartupLocation="CenterOwner">
+                 WindowStartupLocation="CenterScreen">
     <wpf:ThemedWPFWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

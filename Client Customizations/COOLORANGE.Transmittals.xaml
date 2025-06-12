@@ -2,7 +2,7 @@
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:wpf="clr-namespace:Autodesk.DataManagement.Client.Framework.Forms.Controls.WPF;assembly=Autodesk.DataManagement.Client.Framework.Forms"
                  Width="850" Height="650" MinWidth="800" MinHeight="600"
-                 WindowStartupLocation="CenterOwner"
+                 WindowStartupLocation="CenterScreen"
                  Title="COOLORANGE - Transmittal">
 
     <wpf:ThemedWPFWindow.Resources>
@@ -15,6 +15,28 @@
                 <Setter Property="VerticalContentAlignment" Value="Center" />
                 <Setter Property="Margin" Value="1" />
             </Style>
+            <!--
+            <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource ThemedComboBoxStyle}">
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="Margin" Value="2" />
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="Height" Value="24" />
+            </Style>
+            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ThemedButtonStyle}">
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="Height" Value="29" />
+            </Style>
+            <Style TargetType="{x:Type Label}" BasedOn="{StaticResource ThemedLabelStyle}">
+                <Setter Property="FontSize" Value="12" />c:\programdata\coolorange\client customizations\coolorange.transmittals.xaml
+
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+            <Style TargetType="{x:Type GroupBox}" BasedOn="{StaticResource ThemedGroupBoxStyle}">
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="Margin" Value="5" />
+                <Setter Property="Padding" Value="5" />
+            </Style>
+            -->
 
             <Geometry x:Key="IndicatorGeometry">F1 M24,24z M0,0z M12,21.101695C8.68629,21.101695,6,18.415395,6,15.101695L6,9.1016949C6,5.7879849 8.68629,3.1016949 12,3.1016949 15.3137,3.1016949 18,5.7879849 18,9.1016949L18,15.101695C18,18.415395,15.3137,21.101695,12,21.101695z</Geometry>
             <DrawingImage x:Key="DrawingImageGreen">
