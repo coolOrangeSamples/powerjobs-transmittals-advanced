@@ -214,9 +214,10 @@ Add-VaultMenuItem -Location 'TransmittalContextMenu' -Name 'Send...' -Submenu "<
 
     $templates = $vault.BehaviorService.GetAllEmailTemplates()
     $template = $templates | Where-Object { $_.Name -eq "Transmittal Template" }
-
-    Add-Type -Path "C:\ProgramData\coolOrange\Client Customizations\Modules\DevExpress.RichEdit.v22.2.Core.dll"
     $propDefs = $vault.PropertyService.GetPropertyDefinitionsByEntityClassId($null)
+
+    $version = [AppDomain]::CurrentDomain.GetAssemblies() | Where-Object { $_.FullName -like 'DevExpress.Data*' } | ForEach-Object { $_.GetName() } | Select-Object -ExpandProperty Version -Unique -First 1
+    Add-Type -Path "C:\ProgramData\coolOrange\Client Customizations\Modules\DevExpress.RichEdit.v$($version.Major).$($version.Minor).Core.dll"
     
     $server = New-Object DevExpress.XtraRichEdit.RichEditDocumentServer
     $server.add_CalculateDocumentVariable({
@@ -272,7 +273,7 @@ Add-VaultMenuItem -Location ToolsMenu -Name "New..." -Submenu "<b>Transmittals</
     [System.Windows.Forms.SendKeys]::SendWait('{F5}')
 }
 
-Add-VaultMenuItem -Location FileContextMenu -Name "Add to Transmittal..." -Submenu "<b>Transmittals</b>" -Action {
+Add-VaultMenuItem -Location FileContextMenu -Name "Add to existing Transmittal..." -Submenu "<b>Transmittals</b>" -Action {
     param($entities)
 
     $propDefs = $vault.PropertyService.GetPropertyDefinitionsByEntityClassId("CUSTENT")
@@ -297,18 +298,16 @@ Add-VaultMenuItem -Location FileContextMenu -Name "Add to Transmittal..." -Subme
 
     $bookmark = ""
     $status = $null
-    $totalResults = @()
-    while ($null -eq $status -or $totalResults.Count -lt $status.TotalHits) {
+    $custEnts = @()
+    while ($null -eq $status -or $custEnts.Count -lt $status.TotalHits) {
         $results = $vault.CustomEntityService.FindCustomEntitiesBySearchConditions($srchConds, $null, [ref]$bookmark, [ref]$status)
         if ($null -ne $results) {
-            $totalResults += $results
+            $custEnts += $results
         }
         else {
             break
         }
     }
-
-    $custEnts = $totalResults
 
     if ($custEnts.Count -eq 0) {
         #TODO: future improvements: allow the user to create a new transmittal from a file
@@ -319,7 +318,7 @@ Add-VaultMenuItem -Location FileContextMenu -Name "Add to Transmittal..." -Subme
     }
 
     #TODO: future improvements: allow the users to include children, parents or related documentation for the selected files
-    $custEnt = ShowTransmittalSelectionDialog $custEnts
+    $custEnt = ShowTransmittalSelectionDialog @($custEnts)
     if (-not $custEnt) {
         return
     }
@@ -332,6 +331,22 @@ Add-VaultMenuItem -Location FileContextMenu -Name "Add to Transmittal..." -Subme
 
     $fileLinks = GetFileLinks $metaLinks
     UpdateLinks $custEnt.Id $fileLinks
+}
+
+Add-VaultMenuItem -Location FileContextMenu -Name "Add to new Transmittal..." -Submenu "<b>Transmittals</b>" -Action {
+    param($entities)
+
+    $schemes = $vault.NumberingService.GetNumberingSchemes("FILE", [Autodesk.Connectivity.WebServices.NumSchmType]::Activated)
+    $scheme = $schemes | Where-Object { $_.Name -eq "Transmittal Scheme" }
+
+    $transmittal = ShowTransmittalDialog -scheme $scheme -filesToLink $entities
+    if (-not $transmittal) {
+        return
+    }
+
+    $custEnt = CreateNewTransmittal $scheme
+    UpdateLinks $custEnt.Id $transmittal.Links
+    UpdateTransmittalProperties $custEnt.Id $transmittal
 }
 #endregion
 
@@ -420,15 +435,16 @@ Add-VaultTab -Name "Transmittal" -EntityType Transmittal -Action {
 #endregion
 
 #region Dialog Functions
-function ShowTransmittalSelectionDialog([array]$custEnts, $selectedObjectName = $null) {
-    $itemsSource = [System.Collections.ObjectModel.ObservableCollection[[System.Object]]]::new($custEnts)
+function ShowTransmittalSelectionDialog($custEnts, $selectedObjectName = $null) {
+    $itemsSource = [System.Collections.ObjectModel.ObservableCollection[[System.Object]]]::new()
+    $custEnts | ForEach-Object { $itemsSource.Add($_) }
 
     Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Autodesk.DataManagement.Client.Framework.Forms
     $xamlFile = [xml](Get-Content "C:\ProgramData\coolOrange\Client Customizations\COOLORANGE.Transmittals.Select.xaml")
     $window = [Windows.Markup.XamlReader]::Load( (New-Object System.Xml.XmlNodeReader $xamlFile) )
     ApplyVaultTheme $window
 
-    $window.FindName("Object").ItemsSource = $itemsSource | Sort-Object { $_.Name } -Descending
+    $window.FindName("Object").ItemsSource = @($itemsSource | Sort-Object { $_.Name } -Descending)
     $window.FindName("Object").SelectedValue = $selectedObjectName
             
     $window.FindName('Ok').add_Click({
@@ -535,7 +551,7 @@ function UpdateHeaderCheckbox($control) {
     }
 }
 
-function ShowTransmittalDialog($customObject = $null, $scheme = $null) {
+function ShowTransmittalDialog($customObject = $null, $scheme = $null, $filesToLink = $null) {
     $iteration = 0
     $email = ""
     $project = ""
@@ -553,6 +569,19 @@ function ShowTransmittalDialog($customObject = $null, $scheme = $null) {
         $state = $customObject._State
         $metaLinks = @(GetMetaLinks $customObject.Id)
         $fileLinks = GetFileLinks $metaLinks
+    }
+
+    if ($filesToLink) {
+        $newMetaLinks = @()        
+        foreach($fileToLink in $filesToLink) {
+            try {
+                $metaLink = GetMetaLink $fileToLink
+                $newMetaLinks += $metaLink
+            } catch {
+            }
+        }
+
+        $fileLinks = GetFileLinks $newMetaLinks
     }
 
     if ($scheme) {
